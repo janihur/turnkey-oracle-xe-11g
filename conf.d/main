@@ -1,0 +1,67 @@
+#!/bin/sh -ex
+
+#
+# Oracle installer requires /sbin/chkconfig
+#
+
+cat << 'EOF' > /sbin/chkconfig
+#!/bin/bash
+# Oracle 11gR2 XE installer chkconfig hack for Ubuntu
+file=/etc/init.d/oracle-xe
+
+if [[ ! `tail -n1 $file | grep INIT` ]]; then
+  echo >> $file
+  echo '### BEGIN INIT INFO' >> $file
+  echo '# Provides: OracleXE' >> $file
+  echo '# Required-Start: $remote_fs $syslog' >> $file
+  echo '# Required-Stop: $remote_fs $syslog' >> $file
+  echo '# Default-Start: 2 3 4 5' >> $file
+  echo '# Default-Stop: 0 1 6' >> $file
+  echo '# Short-Description: Oracle 11g Express Edition' >> $file
+  echo '### END INIT INFO' >> $file
+fi
+
+update-rc.d oracle-xe defaults 80 01
+EOF
+
+chmod 755 /sbin/chkconfig
+
+#
+# Kernel parameters
+#
+# http://docs.oracle.com/cd/E17781_01/install.112/e18802/toc.htm
+#  -> 2.1.3 Server Component Kernel Parameter Requirements
+#
+
+cat << 'EOF' > /etc/sysctl.d/oracle.conf
+fs.file-max=6815744  
+net.ipv4.ip_local_port_range=9000 65000  
+kernel.sem=250 32000 100 128 
+kernel.shmmax=4294967295
+kernel.shmmni=4096
+kernel.shmall=2097152
+EOF
+
+#
+# 
+#
+
+ln -s /usr/bin/awk /bin/awk
+mkdir -p /var/lock/subsys
+touch /var/lock/subsys/listener
+
+#
+# Swap
+# http://docs.oracle.com/cd/E17781_01/install.112/e18802/toc.htm
+# -> 2.1.2 Swap Space Requirements
+# https://wiki.debian.org/Swap
+# TODO: modify swap partition instead
+#
+
+dd if=/dev/zero of=/swap bs=1024 count=2097152
+mkswap /swap
+swapon /swap
+
+cat << 'EOF' >> /etc/fstab
+/swap	none	swap	sw	0	0
+EOF
