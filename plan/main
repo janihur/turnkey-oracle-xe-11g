@@ -1,4 +1,6 @@
 #include <turnkey/base>
 
+alien
+bc
 libaio1
 unixodbc

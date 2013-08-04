@@ -1,6 +1,10 @@
 #!/bin/sh -ex
 
 #
+# Not all of these steps are verified yet.
+#
+
+#
 # Oracle installer requires /sbin/chkconfig
 #
 
@@ -21,6 +25,7 @@ if [[ ! `tail -n1 $file | grep INIT` ]]; then
   echo '### END INIT INFO' >> $file
 fi
 
+update-rc.d shm_load defaults
 update-rc.d oracle-xe defaults 80 01
 EOF
 
@@ -47,8 +52,9 @@ EOF
 #
 
 ln -s /usr/bin/awk /bin/awk
-mkdir -p /var/lock/subsys
-touch /var/lock/subsys/listener
+#mkdir -p /var/lock/subsys
+## TODO: the file is not created
+#touch /var/lock/subsys/listener
 
 #
 # Swap
@@ -56,12 +62,69 @@ touch /var/lock/subsys/listener
 # -> 2.1.2 Swap Space Requirements
 # https://wiki.debian.org/Swap
 # TODO: modify swap partition instead
+# TODO: this is created when virtual machine is created by VirtualBox ?
+# TODO: or when appliance is created turnkey base ?
 #
 
-dd if=/dev/zero of=/swap bs=1024 count=2097152
-mkswap /swap
-swapon /swap
+#dd if=/dev/zero of=/swap bs=1024 count=2097152
+#mkswap /swap
+#swapon /swap
 
-cat << 'EOF' >> /etc/fstab
-/swap	none	swap	sw	0	0
+#cat << 'EOF' >> /etc/fstab
+#/swap	none	swap	sw	0	0
+#EOF
+
+#
+# /dev/shm
+# Oracle doesn't like debian's /dev/shm so we have to 
+# re-create it in every boot
+#
+
+cat << 'EOF' > /etc/init.d/shm_load
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:             shm_load
+# Required-Start:       $remote_fs $syslog
+# Required-Stop:        $remote_fs $syslog
+# Default-Start:        2 3 4 5
+# Default-Stop:         0 1 6
+# Short-Description:    /dev/shm for Oracle XE
+### END INIT INFO
+
+case "$1" in
+start) mkdir -p /var/lock/subsys 2>/dev/null
+       touch /var/lock/subsys/listener
+       mount -o remount /dev/shm
+       rm /dev/shm 2>/dev/null
+       mkdir /dev/shm 2>/dev/null
+       mount -t tmpfs shmfs -o size=2048m /dev/shm ;;
+*) echo nothing
+   exit 1 ;;
+esac
+
+exit 0
 EOF
+
+chmod 755 /etc/init.d/shm_load
+
+#
+#
+#
+
+cat << 'EOF' > /etc/profile.d/oracle.sh
+export ORACLE_BASE=/u01/app/oracle
+export ORACLE_HOME=$ORACLE_BASE/product/11.2.0/xe
+export ORACLE_SID=XE
+
+if [ -x $ORACLE_HOME/bin/nls_lang.sh ]; then
+  export NLS_LANG=$($ORACLE_HOME/bin/nls_lang.sh)
+fi
+
+export LD_LIBRARY_PATH=$ORACLE_HOME/lib:$LD_LIBRARY_PATH
+export PATH=$ORACLE_HOME/bin:$PATH
+
+alias ll='ls -alF'
+EOF
+
+chmod 644 /etc/profile.d/oracle.sh
