@@ -1,39 +1,53 @@
 TurnKey Oracle XE 11g
 ==================================================
 
-**Note that this is a working draft !**
-
 The appliance is based on TurnKey Core. It doesn't include Oracle XE out of
-the box yet but provides a ready-made environment where the installation of
+the box but provides a ready-made environment where the installation of
 Oracle is easy to do by following these instructions.
 
 First set up a VirtualBox virtual machine and then log in and configure Oracle.
 
+Resources
+--------------------------------------------------
+
+- `Oracle Database 11g Express Edition <http://www.oracle.com/technetwork/products/express-edition/overview/index.html>`_
+- `Oracle Database Express Edition 11g Release 2 download page <http://www.oracle.com/technetwork/products/express-edition/downloads/index.html>`_
+- `Oracle Database Express Edition Installation Guide for Linux x86-64 <http://docs.oracle.com/cd/E17781_01/install.112/e18802/toc.htm>`_
+- `Ask Ubuntu <http://askubuntu.com>`_: `How to install Oracle Express 11gR2? <http://askubuntu.com/questions/198163/how-to-install-oracle-express-11gr2>`_
+- `Installing Oracle 11g R2 Express Edition on Ubuntu 64-bit <http://meandmyubuntulinux.blogspot.fi/2012/05/installing-oracle-11g-r2-express.html>`_
+
 VirtualBox Setup
 --------------------------------------------------
 
-Set the following values when creating a new virtual machine:
+Set the following values when creating a new VirtualBox virtual machine:
 
-- Memory: 2G
+- Memory: 2GB
 
-- Disk size: 21G (creates 2045MB swap and 15G free space after installation)
+- Disk size: 21GB (creates 2045MB swap that fullfills Oracle requirements and
+  there's 16GB free space after installation)
 
-- Network adapter: bridged
+- Network adapter: Bridged
 
-If you need more disk space just increase the disk size as much as you'd like.
+If you need more disk space just increase the disk size as much as you like.
 
-TODO: Memory and disk size could be in fact be a bit smaller, but the values
-above work fine.
+2GB memory is probably too much as according to Oracle documents XE uses 1 GB
+at maximum.
 
 How to install Oracle XE
 --------------------------------------------------
 
-First get the zipped Oracle XE RPM package from Oracle site and upload it to
-the virtual machine.
+First get the zipped Oracle XE RPM package from `Oracle site <http://www.oracle.com/technetwork/products/express-edition/downloads/index.html>`_ and upload it to
+a virtual machine.
 
 Downloading the package requires an account to Oracle site and accepting a license.
  
 Log in to the virtual machine as root and run the following commands:
+
+0. Unzip:
+
+::
+
+    unzip oracle-xe-11.2.0-1.0.x86_64.rpm.zip
 
 1. Convert RPM to a debian package:
 
@@ -87,3 +101,10 @@ That's it ! Now Oracle is running:
     NLSRTL Version 11.2.0.2.0 - Production
     
     SQL> 
+
+Create an user account:
+
+::
+
+    root@turnkey-oracle-xe-11g ~# $ORACLE_HOME/bin/sqlplus sys/<PASSWORD> as
+    sysdba @bin/mkorauser.sql <USERNAME> <PASSWORD>
