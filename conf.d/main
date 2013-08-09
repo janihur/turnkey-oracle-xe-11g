@@ -41,22 +41,14 @@ ln -s /usr/bin/awk /bin/awk
 #touch /var/lock/subsys/listener
 
 #
-# Swap
+# Swap requirements:
 # http://docs.oracle.com/cd/E17781_01/install.112/e18802/toc.htm
 # -> 2.1.2 Swap Space Requirements
 # https://wiki.debian.org/Swap
 # TODO: modify swap partition instead
-# TODO: this is created when virtual machine is created by VirtualBox ?
-# TODO: or when appliance is created turnkey base ?
+# TODO: fulfilled when disk size > 20GB in VirtualBox
+# TODO: but how this should be really done ?
 #
-
-#dd if=/dev/zero of=/swap bs=1024 count=2097152
-#mkswap /swap
-#swapon /swap
-
-#cat << 'EOF' >> /etc/fstab
-#/swap	none	swap	sw	0	0
-#EOF
 
 #
 # /dev/shm
