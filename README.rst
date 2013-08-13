@@ -15,6 +15,7 @@ Resources
 - `Oracle Database Express Edition Installation Guide for Linux x86-64 <http://docs.oracle.com/cd/E17781_01/install.112/e18802/toc.htm>`_
 - `Ask Ubuntu <http://askubuntu.com>`_: `How to install Oracle Express 11gR2? <http://askubuntu.com/questions/198163/how-to-install-oracle-express-11gr2>`_
 - `Installing Oracle 11g R2 Express Edition on Ubuntu 64-bit <http://meandmyubuntulinux.blogspot.fi/2012/05/installing-oracle-11g-r2-express.html>`_
+- `Oracle 11g AMM: MEMORY_TARGET, MEMORY_MAX_TARGET and /dev/shm <http://blog.oracle48.nl/oracle-11g-amm-memory_target-memory_max_target-and-dev_shm/>`_
 
 VirtualBox Setup
 --------------------------------------------------
@@ -23,15 +24,15 @@ Set the following values when creating a new VirtualBox virtual machine:
 
 - Memory: 2GB
 
-- Disk size: 21GB (creates 2045MB swap that fullfills Oracle requirements and
-  there's 16GB free space after installation)
+- Disk size: 21GB (there will be 16GB free space after installation)
 
 - Network adapter: Bridged
 
 If you need more disk space just increase the disk size as much as you like.
 
 2GB memory is probably too much as according to Oracle documents XE uses 1 GB
-at maximum.
+at maximum. But OTOH 2GB RAM creates 2045MB swap that fullfills Oracle swap
+requirement.
 
 How to install Oracle XE
 --------------------------------------------------
@@ -73,7 +74,7 @@ Log in to the virtual machine as root and run the following commands:
 
     /etc/init.d/oracle-xe configure
 
-The configuration script asks several question. You can accept the default
+The configuration script asks several questions. You can accept the default
 values for all other questions except to SYS-password.
 
 That's it ! Now Oracle is running:
