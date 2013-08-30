@@ -75,7 +75,7 @@ Log in to the virtual machine as root and run the following commands:
 
 ::
 
-    alien --scripts oracle-xe-11.2.0-1.0.x86_64.rpm
+    alien --scripts Disk1/oracle-xe-11.2.0-1.0.x86_64.rpm
 
 2. Install:
 
@@ -93,10 +93,7 @@ Log in to the virtual machine as root and run the following commands:
 
 ::
 
-    /etc/init.d/oracle-xe configure
-
-The configuration script asks several questions. You can accept the default
-values for all other questions except to SYS-password.
+    /etc/init.d/oracle-xe configure responseFile=oracle.rsp >> oracle-install.log
 
 That's it ! Now Oracle is running:
 

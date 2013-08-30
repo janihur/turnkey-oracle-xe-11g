@@ -1,0 +1,7 @@
+#!/bin/bash -e
+# set Oracle XE SYS password
+
+. /etc/default/inithooks
+
+[ -e $INITHOOKS_CONF ] && . $INITHOOKS_CONF
+$INITHOOKS_PATH/bin/oracle.py --dbpass="$DB_PASS"
